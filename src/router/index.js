@@ -8,11 +8,19 @@ import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Signin from "../views/Signin.vue";
 
+import CategoriesForm from "../views/CategoriesForm.vue";
+import ProduitsForm from "../views/produitsForm.vue";
+import ProduitsList from "../views/ProduitsList.vue";
+import ClientsList from "../views/ClientsList.vue";
+import ClientForm from "../views/ClientForm.vue";
+import CategorieListe from "@/views/CategorieListe.vue";
+
+
 const routes = [
   {
     path: "/",
     name: "/",
-    redirect: "/dashboard-default",
+    redirect: "/Signin",
   },
   {
     path: "/dashboard-default",
@@ -43,6 +51,53 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: Profile,
+  },
+  {
+  path: '/categories',
+    name: 'CategoriesList',
+    component: CategorieListe,
+},
+  {
+    path: '/categories/create',
+    name: 'CategoryCreate',
+    component: CategoriesForm,
+  },
+  {
+    path: '/categories/edit/:id',
+    name: 'CategoryEdit',
+    component: CategoriesForm,
+  },
+  {
+    path: '/admin/products',
+    name: 'ProductsIndex',
+    component: ProduitsList,
+  },
+  {
+    path: '/admin/products/create',
+    name: 'ProductsCreate',
+    component: ProduitsForm,
+  },
+  {
+    path: '/admin/products/:id/edit',
+    name: 'ProductsEdit',
+    component: ProduitsForm,
+    props: true,
+  },
+  {
+    path: '/admin/customers',
+    name: 'CustomersIndex',
+    component: ClientsList,
+  },
+  {
+    path: '/admin/customers/create',
+    name: 'CustomersCreate',
+    component: ClientForm,
+  },
+  {
+    path: '/admin/customers/:id/edit',
+    name: 'CustomersEdit',
+    component: ClientForm,
+    props: true,
   },
   {
     path: "/signin",
