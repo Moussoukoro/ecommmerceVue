@@ -84,20 +84,20 @@ const routes = [
     props: true,
   },
   {
-    path: '/admin/customers',
+    path: '/customers',
     name: 'CustomersIndex',
     component: ClientsList,
   },
   {
-    path: '/admin/customers/create',
+    path: '/customers/create',
     name: 'CustomersCreate',
     component: ClientForm,
   },
   {
-    path: '/admin/customers/:id/edit',
+    path: '/customers/edit/:id',
     name: 'CustomersEdit',
     component: ClientForm,
-    props: true,
+
   },
   {
     path: "/signin",

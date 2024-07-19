@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-8">
-      <router-link to="/admin/customers/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <router-link to="/customers/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Ajouter un Client
       </router-link>
       <a href="{{ route('customers.exportPDF') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
@@ -29,13 +29,11 @@
           <td class="px-6 py-4 whitespace-nowrap">{{ customer.phone }}</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ customer.sex }}</td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <router-link :to="{ name: 'admin.customers.edit', params: { id: customer.id }}" class="text-indigo-600 hover:text-indigo-900">
-              Modifier
-            </router-link>
+            <router-link :to="`/customers/edit/${customer.id}`" class="text-indigo-600 hover:text-indigo-900">Editer</router-link>
             <button @click="deleteCustomer(customer.id)" class="text-red-600 hover:text-red-900 ml-4">Supprimer</button>
-            <router-link :to="{ name: 'admin.customers.show', params: { id: customer.id }}" class="text-indigo-600 hover:text-indigo-900 ml-4">
-              Historique
-            </router-link>
+<!--            <router-link :to="{ name: 'admin.customers.show', params: { id: customer.id }}" class="text-indigo-600 hover:text-indigo-900 ml-4">-->
+<!--              Historique-->
+<!--            </router-link>-->
           </td>
         </tr>
         <tr v-if="customers.length === 0">
@@ -62,7 +60,7 @@ export default {
 
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get('/api/admin/customers');
+        const response = await axios.get('http://127.0.0.1:8000/api/customers');
         customers.value = response.data;
       } catch (error) {
         console.error('Error fetching customers:', error);
@@ -72,7 +70,7 @@ export default {
     const deleteCustomer = async (customerId) => {
       if (confirm('Voulez-vous vraiment supprimer ce client ?')) {
         try {
-          await axios.delete(`/api/admin/customers/${customerId}`);
+          await axios.delete(`http://127.0.0.1:8000/api/customers/${customerId}`);
           // Optionally, update state or notify user
           fetchCustomers();
         } catch (error) {
