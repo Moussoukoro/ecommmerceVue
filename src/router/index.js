@@ -68,20 +68,19 @@ const routes = [
     component: CategoriesForm,
   },
   {
-    path: '/admin/products',
+    path: '/products',
     name: 'ProductsIndex',
     component: ProduitsList,
   },
   {
-    path: '/admin/products/create',
+    path: '/products/create',
     name: 'ProductsCreate',
     component: ProduitsForm,
   },
   {
-    path: '/admin/products/:id/edit',
+    path: '/products/:id/edit',
     name: 'ProductsEdit',
     component: ProduitsForm,
-    props: true,
   },
   {
     path: '/customers',

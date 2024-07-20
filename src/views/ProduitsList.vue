@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between mb-8">
-      <router-link to="/admin/products/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <router-link to="/products/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Ajouter un Produit
       </router-link>
       <div class="flex justify-between">
@@ -34,7 +34,7 @@
           <td class="px-4 py-3">{{ product.stock }}</td>
           <td class="px-4 py-3">{{ product.category.name }}</td>
           <td class="px-4 py-3">
-            <router-link :to="'/admin/products/edit/' + product.id" class="text-indigo-600 hover:text-indigo-900">Modifier</router-link>
+            <router-link :to="'/products/edit/' + product.id" class="text-indigo-600 hover:text-indigo-900">Modifier</router-link>
             <router-link :to="'/admin/products/show/' + product.id" class="text-indigo-600 hover:text-indigo-900 ml-4">Voir</router-link>
             <button @click="deleteProduct(product.id)" class="text-red-600 hover:text-red-900 ml-4">Supprimer</button>
           </td>

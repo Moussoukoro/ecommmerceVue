@@ -85,10 +85,10 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onBeforeUnmount } from 'vue';
+import {ref, onBeforeMount, onBeforeUnmount} from 'vue';
 import axios from 'axios';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import {useStore} from 'vuex';
+import {useRouter} from 'vue-router';
 import Navbar from '@/examples/PageLayout/Navbar.vue';
 import ArgonInput from '@/components/ArgonInput.vue';
 import ArgonSwitch from '@/components/ArgonSwitch.vue';
@@ -109,17 +109,19 @@ const handleSubmit = async () => {
       password: password.value,
     });
 
-    console.log('User logged in:', response.data);
-    // Handle successful login (e.g., redirect to dashboard)
-    router.push('/dashboard-default'); // Rediriger vers le tableau de bord après la connexion
+    localStorage.setItem('token', response.data.token);
+    // token expire après 1 heure
+    localStorage.setItem('tokenExpiration', Date.now() + 3600 * 1000);
+    router.push('/dashboard-default');
   } catch (error) {
-    if (error.response) {
-      errorMessage.value = error.response.data.message;
+    if (error.response && error.response.data.errors) {
+      errorMessage.value = error.response.data.errors.email[0] || 'Erreur de connexion';
     } else {
-      errorMessage.value = 'An error occurred. Please try again.';
+      errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.';
     }
   }
 };
+
 
 onBeforeMount(() => {
   store.state.hideConfigButton = true;

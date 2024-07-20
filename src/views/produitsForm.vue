@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between mb-8">
-      <router-link to="/admin/products" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+      <router-link to="/products" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
         Retour
       </router-link>
     </div>
@@ -19,7 +19,7 @@
 
         <label class="block text-sm font-medium text-gray-700">Catégorie</label>
         <select v-model="formData.category_id" name="category_id" class="input-field">
-          <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+          <option v-for="category in localCategories" :key="category.id" :value="category.id">{{ category.name }}</option>
         </select>
       </div>
 
@@ -27,10 +27,9 @@
       <textarea v-model="formData.description" name="description" class="input-field"></textarea>
 
       <div>
-        <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
+
         <div class="mt-1 flex items-center">
           <img v-if="formData.photo" :src="formData.photoUrl" alt="Product Image" class="h-48 w-48 rounded-full">
-          <img v-else src="defaultImageSrc" alt="Default Image" class="h-48 w-48 rounded-full">
           <input type="file" name="photo" id="image" @change="handleFileUpload" class="ml-5 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
         <span v-if="formErrors.photo" class="text-red-500 mt-1 text-sm">{{ formErrors.photo }}</span>
@@ -46,30 +45,40 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 export default {
   name: 'ProductForm',
   props: {
-    product: Object, // This should be passed as a prop from the parent component
-    categories: Array, // This should be passed as a prop from the parent component
+    product: Object,
+    categories: Array,
   },
   setup(props) {
+    // Créer une copie locale de la propriété "categories"
+    const localCategories = ref([]);
+
+    // Utiliser la copie locale pour afficher les données et effectuer des opérations
+    const selectedCategory = ref(null);
+    const handleCategoryChange = (event) => {
+      selectedCategory.value = event.target.value;
+    }
+
     const formData = ref({
-      name: props.product.name || '',
-      price: props.product.price || '',
-      stock: props.product.stock || '',
-      category_id: props.product.category_id || '',
-      description: props.product.description || '',
+      name: props.product?.name || '',
+      price: props.product?.price || '',
+      stock: props.product?.stock || '',
+      category_id: props.product?.category_id || '',
+      description: props.product?.description || '',
       photo: null,
     });
 
-    const formTitle = ref(props.product.exists ? 'Modifier' : 'Ajouter');
-    const defaultImageSrc = ref('defaultImageSrc'); // Provide the URL for the default image
 
+    const formTitle = ref(props.product ? props.product.exists ? 'Modifier' : 'Ajouter' : 'Ajouter');
+
+    const defaultImageSrc = ref('defaultImageSrc');
     const formErrors = ref({
-      photo: '', // To store validation error for photo upload
+      photo: '',
     });
 
     const handleFileUpload = (event) => {
@@ -86,14 +95,14 @@ export default {
       formDataToSubmit.append('photo', formData.value.photo);
 
       try {
-        if (props.product.exists) {
-          await axios.patch(`/api/admin/products/${props.product.id}`, formDataToSubmit, {
+        if (props.product?.exists) {
+          await axios.patch(`http://127.0.0.1:8000/api/products/${props.product.id}`, formDataToSubmit, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           });
         } else {
-          await axios.post('/api/admin/products', formDataToSubmit, {
+          await axios.post('http://127.0.0.1:8000/api/store/products', formDataToSubmit, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
@@ -113,7 +122,23 @@ export default {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/categories');
+        localCategories.value = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    onMounted(() => {
+      fetchCategories();
+    });
+
     return {
+      selectedCategory,
+      handleCategoryChange,
+      localCategories,
       formData,
       formTitle,
       defaultImageSrc,
@@ -124,9 +149,3 @@ export default {
   },
 };
 </script>
-
-<!--<style scoped>-->
-<!--//.input-field {-->
-<!--//  // Add your custom input styles here-->
-<!--//}-->
-<!--</style>-->
