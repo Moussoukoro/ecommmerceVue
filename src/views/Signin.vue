@@ -109,18 +109,34 @@ const handleSubmit = async () => {
       password: password.value,
     });
 
-    localStorage.setItem('token', response.data.token);
-    // token expire après 1 heure
-    localStorage.setItem('tokenExpiration', Date.now() + 3600 * 1000);
-    router.push('/dashboard-default');
-  } catch (error) {
-    if (error.response && error.response.data.errors) {
-      errorMessage.value = error.response.data.errors.email[0] || 'Erreur de connexion';
+    // Affichage pour déboguer la réponse de l'API
+    console.log('API Response:', response.data);
+
+    // Accéder correctement aux données de la réponse
+    const tokenData = response.data.token.original;
+    const user = response.data.user;
+
+    if (tokenData && user) {
+      const { access_token, token_type, expires_at } = tokenData;
+      localStorage.setItem('token', access_token);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('tokenExpiration', new Date(expires_at).getTime());
+      router.push('/categories');
     } else {
-      errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.';
+      throw new Error('Token ou utilisateur manquant dans la réponse');
     }
+  } catch (error) {
+    console.error('Error during login:', error);
+    errorMessage.value = 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
   }
 };
+
+
+
+
+
+
+
 
 
 onBeforeMount(() => {

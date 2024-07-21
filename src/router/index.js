@@ -14,6 +14,10 @@ import ProduitsList from "../views/ProduitsList.vue";
 import ClientsList from "../views/ClientsList.vue";
 import ClientForm from "../views/ClientForm.vue";
 import CategorieListe from "@/views/CategorieListe.vue";
+import UserList from "@/views/UsersList.vue";
+import UserForm from "@/views/UsersForm.vue";
+import UsersForm from "@/views/UsersForm.vue";
+import UsersList from "@/views/UsersList.vue";
 
 
 const routes = [
@@ -56,6 +60,7 @@ const routes = [
   path: '/categories',
     name: 'CategoriesList',
     component: CategorieListe,
+    meta: { requiresAuth: true }  // Ajoute la métadonnée pour la protection de la route
 },
   {
     path: '/categories/create',
@@ -99,6 +104,22 @@ const routes = [
 
   },
   {
+    path: '/users',
+    name: 'UsersIndex',
+    component: UsersList,
+  },
+  {
+    path: '/users/create',
+    name: 'CustomersCreate',
+    component: UsersForm,
+  },
+  {
+    path: '/users/edit/:id',
+    name: 'CustomersEdit',
+    component: UsersForm,
+
+  },
+  {
     path: "/signin",
     name: "Signin",
     component: Signin,
@@ -116,4 +137,13 @@ const router = createRouter({
   linkActiveClass: "active",
 });
 
+// Garde de navigation globale
+router.beforeEach((to, from, next) => {
+  const loggedIn = localStorage.getItem('token');
+  if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
+    next('/signin');
+  } else {
+    next();
+  }
+});
 export default router;

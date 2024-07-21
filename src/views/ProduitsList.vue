@@ -46,9 +46,6 @@
       </table>
     </div>
 
-    <div class="mt-8">
-      <pagination :data="products" @pagination-change-page="fetchProducts" />
-    </div>
   </div>
 </template>
 
@@ -64,8 +61,8 @@ export default {
     };
   },
   methods: {
-    fetchProducts(page = 1) {
-      axios.get(`/api/admin/products?page=${page}`)
+    fetchProducts() {
+      axios.get(`http://127.0.0.1:8000/api/products`)
           .then(response => {
             this.products = response.data;
           })

@@ -2,7 +2,7 @@
   <div>
     <!-- Add category button -->
     <div class="flex justify-between items-center mb-4">
-      <router-link to="/admin/categories/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ajouter une catégorie</router-link>
+      <router-link to="categories/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ajouter une catégorie</router-link>
     </div>
 
     <!-- Categories table -->
@@ -31,37 +31,81 @@
 <script>
 import axios from 'axios';
 
+
 export default {
   data() {
     return {
-      categories: []
+      categories: [],
+      errorMessage: '', // Pour afficher les messages d'erreur si nécessaire
     };
   },
   methods: {
-    fetchCategories() {
-      axios.get('http://127.0.0.1:8000/api/categories')
-          .then(response => {
-            this.categories = response.data;
-            console.log('Categories loaded');
-          })
-          .catch(error => {
-            console.error('Error fetching categories:', error);
-          });
+    async fetchCategories() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token is missing');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/categories', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        this.categories = response.data;
+        console.log('Categories loaded');
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        this.errorMessage = 'Erreur lors du chargement des catégories.';
+        if (error.message === 'Token is missing') {
+          // Redirect to login page or prompt the user to log in again
+          this.$router.push('/signin');
+        }
+      }
     },
-    deleteCategory(categoryId) {
-      axios.delete(`http://127.0.0.1:8000/api/categories/${categoryId}`)
-          .then(() => {
-            this.categories = this.categories.filter(category => category.id !== categoryId);
-          })
-          .catch(error => {
-            console.error('Error deleting category:', error);
-          });
+
+    async deleteCategory(categoryId) {
+      try {
+        await this.checkToken(); // Vérifiez le jeton avant de faire la requête
+        await axios.delete(`http://127.0.0.1:8000/api/categories/${categoryId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        this.categories = this.categories.filter(category => category.id !== categoryId);
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        this.errorMessage = 'Erreur lors de la suppression de la catégorie.';
+        // Rediriger vers la page de connexion si l'erreur est liée à l'authentification
+      }
+    },
+
+    async checkToken() {
+      const token = localStorage.getItem('token');
+      const tokenExpiration = localStorage.getItem('tokenExpiration');
+
+      if (!token || !tokenExpiration || Date.now() > tokenExpiration) {
+        await this.refreshToken();
+      }
+    },
+
+    async refreshToken() {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/refresh', {}, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('tokenExpiration', Date.now() + 3600 * 1000); // Jeton expire après 1 heure
+      } catch (error) {
+        console.error('Error refreshing token:', error);
+        // Rediriger vers la page de connexion si le rafraîchissement échoue
+      }
     }
   },
   created() {
-    setTimeout(() => {
-      this.fetchCategories();
-    }, 100);
+    this.fetchCategories(); // Pas besoin de setTimeout pour l'initialisation
   }
 };
 </script>

@@ -8,7 +8,7 @@
 
     <form class="space-y-6" @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-        <label class="block text-sm font-medium text-gray-700">Nom de la Produit</label>
+        <label class="block text-sm font-medium text-gray-700">Nom du Produit</label>
         <input v-model="formData.name" type="text" name="name" class="input-field" />
 
         <label class="block text-sm font-medium text-gray-700">Prix</label>
@@ -19,7 +19,7 @@
 
         <label class="block text-sm font-medium text-gray-700">Catégorie</label>
         <select v-model="formData.category_id" name="category_id" class="input-field">
-          <option v-for="category in localCategories" :key="category.id" :value="category.id">{{ category.name }}</option>
+          <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
         </select>
       </div>
 
@@ -27,7 +27,6 @@
       <textarea v-model="formData.description" name="description" class="input-field"></textarea>
 
       <div>
-
         <div class="mt-1 flex items-center">
           <img v-if="formData.photo" :src="formData.photoUrl" alt="Product Image" class="h-48 w-48 rounded-full">
           <input type="file" name="photo" id="image" @change="handleFileUpload" class="ml-5 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -37,7 +36,7 @@
 
       <div class="flex justify-center">
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          {{ formTitle }}
+          {{ isEditing ? 'Modifier' : 'Ajouter' }}
         </button>
       </div>
     </form>
@@ -45,38 +44,29 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 
 export default {
   name: 'ProductForm',
   props: {
-    product: Object,
+    product: {
+      type: Object,
+      default: () => ({})
+    },
     categories: Array,
   },
   setup(props) {
-    // Créer une copie locale de la propriété "categories"
-    const localCategories = ref([]);
-
-    // Utiliser la copie locale pour afficher les données et effectuer des opérations
-    const selectedCategory = ref(null);
-    const handleCategoryChange = (event) => {
-      selectedCategory.value = event.target.value;
-    }
-
     const formData = ref({
-      name: props.product?.name || '',
-      price: props.product?.price || '',
-      stock: props.product?.stock || '',
-      category_id: props.product?.category_id || '',
-      description: props.product?.description || '',
+      name: props.product.name || '',
+      price: props.product.price || '',
+      stock: props.product.stock || '',
+      category_id: props.product.category_id || '',
+      description: props.product.description || '',
       photo: null,
     });
 
-
-    const formTitle = ref(props.product ? props.product.exists ? 'Modifier' : 'Ajouter' : 'Ajouter');
-
-    const defaultImageSrc = ref('defaultImageSrc');
+    const isEditing = computed(() => !!props.product.id);
     const formErrors = ref({
       photo: '',
     });
@@ -85,63 +75,59 @@ export default {
       formData.value.photo = event.target.files[0];
     };
 
+    const createProduct = async (formDataToSubmit) => {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/products', formDataToSubmit, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        console.log('Produit créé:', response.data);
+        // Réinitialiser le formulaire ou rediriger l'utilisateur
+      } catch (error) {
+        handleError(error);
+      }
+    };
+
+    const updateProduct = async (formDataToSubmit) => {
+      try {
+        const response = await axios.patch(`http://127.0.0.1:8000/api/products/${props.product.id}`, formDataToSubmit, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        console.log('Produit mis à jour:', response.data);
+        // Peut-être rediriger l'utilisateur ou afficher un message de succès
+      } catch (error) {
+        handleError(error);
+      }
+    };
+
     const handleSubmit = async () => {
       const formDataToSubmit = new FormData();
-      formDataToSubmit.append('name', formData.value.name);
-      formDataToSubmit.append('price', formData.value.price);
-      formDataToSubmit.append('stock', formData.value.stock);
-      formDataToSubmit.append('category_id', formData.value.category_id);
-      formDataToSubmit.append('description', formData.value.description);
-      formDataToSubmit.append('photo', formData.value.photo);
+      Object.keys(formData.value).forEach(key => {
+        if (formData.value[key] !== null) {
+          formDataToSubmit.append(key, formData.value[key]);
+        }
+      });
 
-      try {
-        if (props.product?.exists) {
-          await axios.patch(`http://127.0.0.1:8000/api/products/${props.product.id}`, formDataToSubmit, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-        } else {
-          await axios.post('http://127.0.0.1:8000/api/store/products', formDataToSubmit, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-        }
-        // Optionally, handle success actions like redirect or notify user
-      } catch (error) {
-        if (error.response && error.response.data.errors) {
-          const errors = error.response.data.errors;
-          if (errors.photo) {
-            formErrors.value.photo = errors.photo[0];
-          }
-          // Handle other validation errors as needed
-        }
-        // Handle other errors like network issues
-        console.error(error);
+      if (isEditing.value) {
+        await updateProduct(formDataToSubmit);
+      } else {
+        await createProduct(formDataToSubmit);
       }
     };
 
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/categories');
-        localCategories.value = response.data;
-      } catch (error) {
-        console.error(error);
+    const handleError = (error) => {
+      if (error.response && error.response.data.errors) {
+        const errors = error.response.data.errors;
+        if (errors.photo) {
+          formErrors.value.photo = errors.photo[0];
+        }
+        // Gérer d'autres erreurs de validation si nécessaire
       }
+      console.error('Erreur:', error);
     };
-
-    onMounted(() => {
-      fetchCategories();
-    });
 
     return {
-      selectedCategory,
-      handleCategoryChange,
-      localCategories,
       formData,
-      formTitle,
-      defaultImageSrc,
+      isEditing,
       formErrors,
       handleFileUpload,
       handleSubmit,
@@ -149,3 +135,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Ajoutez vos styles CSS ici si nécessaire */
+</style>
