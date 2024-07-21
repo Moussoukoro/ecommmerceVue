@@ -32,7 +32,8 @@
           <td class="px-4 py-3">{{ product.description.substring(0, 35) }}</td>
           <td class="px-4 py-3">{{ product.price }}</td>
           <td class="px-4 py-3">{{ product.stock }}</td>
-          <td class="px-4 py-3">{{ product.category.name }}</td>
+          <td class="px-4 py-3">{{ product.category ? product.category.name : 'Non catégorisé' }}</td>
+
           <td class="px-4 py-3">
             <router-link :to="'/products/edit/' + product.id" class="text-indigo-600 hover:text-indigo-900">Modifier</router-link>
             <router-link :to="'/admin/products/show/' + product.id" class="text-indigo-600 hover:text-indigo-900 ml-4">Voir</router-link>
@@ -58,6 +59,7 @@ export default {
   data() {
     return {
       products: [],
+      categories: {},
     };
   },
   methods: {
@@ -68,36 +70,58 @@ export default {
           throw new Error('Token is missing');
         }
 
-        console.log('Fetching products with token:', token); // Debug log
-
+        console.log('Fetching products with token:', token);
         const response = await axios.get('http://127.0.0.1:8000/api/products', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
-        this.products = response.data.map(product => {
-          // Assurez-vous que chaque produit a une catégorie définie
-          return {
-            ...product,
-            category: product.category || { name: 'Catégorie non définie' }
-          };
-        });
+        console.log('Raw API response:', response.data);
 
-        console.log('Products loaded:', this.products); // Debug log
+        this.products = response.data;
+        await this.fetchCategories();
+        this.mapCategoriesToProducts();
 
+        console.log('Final products array:', this.products);
       } catch (error) {
         console.error('Error fetching products:', error);
         this.errorMessage = 'Erreur lors du chargement des produits.';
-
         if (error.response && error.response.status === 401) {
-          // Token peut-être invalide ou expiré
           this.$router.push('/signin');
         } else if (error.message === 'Token is missing') {
-          // Token est manquant
           this.$router.push('/signin');
         }
       }
+    },
+
+    async fetchCategories() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/categories', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        this.categories = response.data.reduce((acc, category) => {
+          acc[category.id] = category;
+          return acc;
+        }, {});
+
+        console.log('Categories:', this.categories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    },
+
+    mapCategoriesToProducts() {
+      this.products = this.products.map(product => {
+        return {
+          ...product,
+          category: this.categories[product.category_id] || { name: 'Non catégorisé' }
+        };
+      });
     },
 
     deleteProduct(productId) {
@@ -115,7 +139,9 @@ export default {
     },
   },
   mounted() {
-    this.fetchProducts();
+    this.fetchProducts().then(() => {
+      console.log('Products loaded in mounted hook:', this.products);
+    });
   },
 };
 </script>
