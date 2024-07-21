@@ -14,8 +14,6 @@ import ProduitsList from "../views/ProduitsList.vue";
 import ClientsList from "../views/ClientsList.vue";
 import ClientForm from "../views/ClientForm.vue";
 import CategorieListe from "@/views/CategorieListe.vue";
-import UserList from "@/views/UsersList.vue";
-import UserForm from "@/views/UsersForm.vue";
 import UsersForm from "@/views/UsersForm.vue";
 import UsersList from "@/views/UsersList.vue";
 

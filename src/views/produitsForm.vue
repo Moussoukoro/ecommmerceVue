@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 
 export default {
@@ -53,8 +53,7 @@ export default {
     product: {
       type: Object,
       default: () => ({})
-    },
-    categories: Array,
+    }
   },
   setup(props) {
     const formData = ref({
@@ -66,6 +65,7 @@ export default {
       photo: null,
     });
 
+    const categories = ref([]);
     const isEditing = computed(() => !!props.product.id);
     const formErrors = ref({
       photo: '',
@@ -77,8 +77,11 @@ export default {
 
     const createProduct = async (formDataToSubmit) => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/products', formDataToSubmit, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        const response = await axios.post('http://127.0.0.1:8000/api/store/products', formDataToSubmit, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
         });
         console.log('Produit créé:', response.data);
         // Réinitialiser le formulaire ou rediriger l'utilisateur
@@ -90,7 +93,10 @@ export default {
     const updateProduct = async (formDataToSubmit) => {
       try {
         const response = await axios.patch(`http://127.0.0.1:8000/api/products/${props.product.id}`, formDataToSubmit, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
         });
         console.log('Produit mis à jour:', response.data);
         // Peut-être rediriger l'utilisateur ou afficher un message de succès
@@ -125,8 +131,36 @@ export default {
       console.error('Erreur:', error);
     };
 
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token is missing');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/categories', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        categories.value = response.data;
+        console.log('Categories loaded');
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        if (error.response && error.response.status === 401) {
+          // Rediriger vers la page de connexion si le token est invalide ou manquant
+          // Vous pouvez ajouter une redirection ici
+          window.location.href = '/signin';
+        }
+      }
+    };
+
+    // Récupérer les catégories au chargement du composant
+    onMounted(fetchCategories);
+
     return {
       formData,
+      categories,
       isEditing,
       formErrors,
       handleFileUpload,

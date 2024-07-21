@@ -117,7 +117,7 @@ const handleSubmit = async () => {
     const user = response.data.user;
 
     if (tokenData && user) {
-      const { access_token, token_type, expires_at } = tokenData;
+      const { access_token, expires_at } = tokenData;
       localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('tokenExpiration', new Date(expires_at).getTime());

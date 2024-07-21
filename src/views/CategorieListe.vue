@@ -42,14 +42,10 @@ export default {
   methods: {
     async fetchCategories() {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('Token is missing');
-        }
-
+        await this.checkToken(); // Vérifiez le jeton avant de faire la requête
         const response = await axios.get('http://127.0.0.1:8000/api/categories', {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         this.categories = response.data;
@@ -57,10 +53,7 @@ export default {
       } catch (error) {
         console.error('Error fetching categories:', error);
         this.errorMessage = 'Erreur lors du chargement des catégories.';
-        if (error.message === 'Token is missing') {
-          // Redirect to login page or prompt the user to log in again
-          this.$router.push('/signin');
-        }
+        // Rediriger vers la page de connexion si l'erreur est liée à l'authentification
       }
     },
 

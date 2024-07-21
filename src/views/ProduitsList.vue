@@ -61,15 +61,45 @@ export default {
     };
   },
   methods: {
-    fetchProducts() {
-      axios.get(`http://127.0.0.1:8000/api/products`)
-          .then(response => {
-            this.products = response.data;
-          })
-          .catch(error => {
-            console.error(error);
-          });
+    async fetchProducts() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token is missing');
+        }
+
+        console.log('Fetching products with token:', token); // Debug log
+
+        const response = await axios.get('http://127.0.0.1:8000/api/products', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        this.products = response.data.map(product => {
+          // Assurez-vous que chaque produit a une catégorie définie
+          return {
+            ...product,
+            category: product.category || { name: 'Catégorie non définie' }
+          };
+        });
+
+        console.log('Products loaded:', this.products); // Debug log
+
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        this.errorMessage = 'Erreur lors du chargement des produits.';
+
+        if (error.response && error.response.status === 401) {
+          // Token peut-être invalide ou expiré
+          this.$router.push('/signin');
+        } else if (error.message === 'Token is missing') {
+          // Token est manquant
+          this.$router.push('/signin');
+        }
+      }
     },
+
     deleteProduct(productId) {
       if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
         axios.delete(`/api/admin/products/${productId}`)
