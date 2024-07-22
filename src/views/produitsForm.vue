@@ -89,18 +89,73 @@ export default {
         handleError(error);
       }
     };
+    const refreshToken = async () => {
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        const response = await axios.post('http://127.0.0.1:8000/api/refresh', {
+          refresh_token: refreshToken
+        });
+        const { access_token, refresh_token } = response.data;
+        localStorage.setItem('token', access_token);
+        localStorage.setItem('refreshToken', refresh_token);
+      } catch (error) {
+        console.error('Erreur lors du rafraîchissement du token:', error);
+        throw error;
+      }
+    };
 
     const updateProduct = async (formDataToSubmit) => {
       try {
-        const response = await axios.patch(`http://127.0.0.1:8000/api/products/${props.product.id}`, formDataToSubmit, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-        });
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token dauthentification non trouvé');
+        }
+
+        const response = await axios.patch(
+            `http://127.0.0.1:8000/api/products/${props.product.id}`,
+        formDataToSubmit,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+              },
+            }
+      );
+
         console.log('Produit mis à jour:', response.data);
-        // Peut-être rediriger l'utilisateur ou afficher un message de succès
+        // Ici, vous pouvez ajouter du code pour gérer le succès, par exemple :
+        // - Mettre à jour l'état local
+        // - Afficher un message de succès
+        // - Rediriger l'utilisateur
+
       } catch (error) {
+        if (error.response) {
+          // La requête a été faite et le serveur a répondu avec un code d'état
+          // qui ne fait pas partie de la plage 2xx
+          console.error('Erreur de réponse du serveur:', error.response.data);
+          console.error('Status:', error.response.status);
+
+          if (error.response.status === 401) {
+            // Token invalide ou expiré
+            console.error('Token invalide ou expiré. Tentative de rafraîchissement...');
+            try {
+              await refreshToken(); // Assurez-vous d'avoir défini cette fonction
+              // Réessayez la mise à jour après le rafraîchissement du token
+              return updateProduct(formDataToSubmit);
+            } catch (refreshError) {
+              console.error('Échec du rafraîchissement du token:', refreshError);
+              // Rediriger vers la page de connexion ou afficher un message d'erreur
+            }
+          }
+        } else if (error.request) {
+          // La requête a été faite mais aucune réponse n'a été reçue
+          console.error('Aucune réponse reçue:', error.request);
+        } else {
+          // Une erreur s'est produite lors de la configuration de la requête
+          console.error('Erreur de configuration de la requête:', error.message);
+        }
+
+        // Gérer l'erreur de manière appropriée (par exemple, afficher un message à l'utilisateur)
         handleError(error);
       }
     };

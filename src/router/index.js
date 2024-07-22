@@ -16,6 +16,8 @@ import ClientForm from "../views/ClientForm.vue";
 import CategorieListe from "@/views/CategorieListe.vue";
 import UsersForm from "@/views/UsersForm.vue";
 import UsersList from "@/views/UsersList.vue";
+import commandeList from "@/views/CommandeList.vue";
+import commandesForm from "@/views/CommandesForm.vue";
 
 
 const routes = [
@@ -99,6 +101,22 @@ const routes = [
     path: '/customers/edit/:id',
     name: 'CustomersEdit',
     component: ClientForm,
+
+  },
+  {
+    path: '/orders',
+    name: 'ordersIndex',
+    component: commandeList,
+  },
+  {
+    path: '/orders/create',
+    name: 'ordersCreate',
+    component: commandesForm,
+  },
+  {
+    path: '/orders/edit/:id',
+    name: 'ordersEdit',
+    component: commandesForm,
 
   },
   {
