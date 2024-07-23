@@ -108,22 +108,23 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value,
     });
-
-    // Affichage pour déboguer la réponse de l'API
     console.log('API Response:', response.data);
-
-    // Accéder correctement aux données de la réponse
-    const tokenData = response.data.token.original;
-    const user = response.data.user;
-
-    if (tokenData && user) {
-      const { access_token, expires_at } = tokenData;
+    
+    const { access_token, token_type } = response.data;
+    
+    if (access_token) {
       localStorage.setItem('token', access_token);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('tokenExpiration', new Date(expires_at).getTime());
+      localStorage.setItem('tokenType', token_type);
+      // Comme vous n'avez pas d'informations sur l'utilisateur dans la réponse,
+      // vous devrez peut-être faire une autre requête pour obtenir ces informations
+      // ou les gérer différemment.
+      
+      // Vous n'avez pas non plus d'information sur l'expiration du token
+      // Vous devrez peut-être l'obtenir d'une autre manière ou utiliser une valeur par défaut
+      
       router.push('/categories');
     } else {
-      throw new Error('Token ou utilisateur manquant dans la réponse');
+      throw new Error('Token manquant dans la réponse');
     }
   } catch (error) {
     console.error('Error during login:', error);
