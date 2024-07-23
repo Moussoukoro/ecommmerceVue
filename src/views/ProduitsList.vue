@@ -1,7 +1,15 @@
 <template>
   <div class="card mb-5 mt-5">
-    <div class="card-header pb-0">
-      <h6>Products table</h6>
+    <div class="card-header pb-0 d-flex justify-content-between">
+      <h6>Liste des produits</h6>
+      <div class="mt-4">
+        <router-link 
+          to="/products/create" 
+          class="btn bg-gradient-primary"
+        >
+          Ajouter un produit
+        </router-link>
+      </div>
     </div>
     <div class="card-body px-0 pt-0 pb-2">
       <div class="table-responsive p-0">
