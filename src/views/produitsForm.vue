@@ -1,47 +1,69 @@
 <template>
-  <div>
-    <div class="flex justify-between mb-8">
-      <router-link to="/products" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-        Retour
-      </router-link>
+  <div class="card">
+    <div class="card-header pb-0">
+      <div class="d-flex justify-content-between align-items-center">
+        <h6 class="mb-0">{{ isEditing ? 'Modifier le produit' : 'Ajouter un produit' }}</h6>
+        <router-link to="/products" class="btn btn-outline-secondary btn-sm mb-0">
+          Retour
+        </router-link>
+      </div>
     </div>
-
-    <form class="space-y-6" @submit.prevent="handleSubmit" enctype="multipart/form-data">
-      <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-        <label class="block text-sm font-medium text-gray-700">Nom du Produit</label>
-        <input v-model="formData.name" type="text" name="name" class="input-field" />
-
-        <label class="block text-sm font-medium text-gray-700">Prix</label>
-        <input v-model="formData.price" type="number" name="price" class="input-field" />
-
-        <label class="block text-sm font-medium text-gray-700">Stock</label>
-        <input v-model="formData.stock" type="number" name="stock" class="input-field" />
-
-        <label class="block text-sm font-medium text-gray-700">Catégorie</label>
-        <select v-model="formData.category_id" name="category_id" class="input-field">
-          <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
-        </select>
-      </div>
-
-      <label class="block text-sm font-medium text-gray-700">Description</label>
-      <textarea v-model="formData.description" name="description" class="input-field"></textarea>
-
-      <div>
-        <div class="mt-1 flex items-center">
-          <img v-if="formData.photo" :src="formData.photoUrl" alt="Product Image" class="h-48 w-48 rounded-full">
-          <input type="file" name="photo" id="image" @change="handleFileUpload" class="ml-5 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    <div class="card-body">
+      <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="name" class="form-control-label">Nom du Produit</label>
+              <input v-model="formData.name" type="text" id="name" class="form-control" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="price" class="form-control-label">Prix</label>
+              <input v-model="formData.price" type="number" id="price" class="form-control" />
+            </div>
+          </div>
         </div>
-        <span v-if="formErrors.photo" class="text-red-500 mt-1 text-sm">{{ formErrors.photo }}</span>
-      </div>
-
-      <div class="flex justify-center">
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          {{ isEditing ? 'Modifier' : 'Ajouter' }}
-        </button>
-      </div>
-    </form>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="stock" class="form-control-label">Stock</label>
+              <input v-model="formData.stock" type="number" id="stock" class="form-control" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="category" class="form-control-label">Catégorie</label>
+              <select v-model="formData.category_id" id="category" class="form-select">
+                <option v-for="category in categories" :key="category.id" :value="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="description" class="form-control-label">Description</label>
+          <textarea v-model="formData.description" id="description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="photo" class="form-control-label">Photo</label>
+          <div class="d-flex align-items-center">
+            <img v-if="formData.photo" :src="formData.photoUrl" alt="Product Image" class="avatar avatar-sm me-3">
+            <input type="file" id="photo" @change="handleFileUpload" class="form-control" />
+          </div>
+          <small v-if="formErrors.photo" class="text-danger">{{ formErrors.photo }}</small>
+        </div>
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn bg-gradient-primary btn-sm mb-0">
+            {{ isEditing ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
+
 
 <script>
 import { ref, computed, onMounted } from 'vue';
@@ -231,5 +253,74 @@ export default {
 </script>
 
 <style scoped>
-/* Ajoutez vos styles CSS ici si nécessaire */
+.card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+}
+
+.card-header {
+  padding: 1.5rem;
+  background-color: transparent;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.form-control-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #344767;
+}
+
+.form-control, .form-select {
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #5e72e4;
+  box-shadow: 0 0 0 2px rgb(94 114 228 / 25%);
+}
+
+.btn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in;
+}
+
+.btn-outline-secondary {
+  color: #8392ab;
+  border-color: #8392ab;
+}
+
+.btn-outline-secondary:hover {
+  color: #ffffff;
+  background-color: #8392ab;
+  border-color: #8392ab;
+}
+
+.bg-gradient-primary {
+  background-image: linear-gradient(310deg, #5e72e4 0%, #825ee4 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.bg-gradient-primary:hover {
+  background-image: linear-gradient(310deg, #5e72e4 0%, #825ee4 100%);
+  opacity: 0.9;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 </style>
