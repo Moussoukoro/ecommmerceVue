@@ -61,7 +61,13 @@ export default {
 
     const fetchCategory = async () => {
       try {
-        const response = await axios.get(`${apiBaseUrl}/categories/${categoryId.value}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${apiBaseUrl}/categories/${categoryId.value}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Ajoutez l'en-tête d'authentification
+            'Content-Type': 'application/json' // Assurez-vous que le type de contenu est bien spécifié
+          }
+        });
         if (response.data && response.data.name) {
           form.name = response.data.name;
         }
@@ -70,13 +76,30 @@ export default {
       }
     };
 
+
     const submitForm = async () => {
       try {
         const url = isEditing.value
           ? `${apiBaseUrl}/categories/${categoryId.value}`
           : `${apiBaseUrl}/store/categories`;
         const method = isEditing.value ? 'put' : 'post';
-        await axios({method, url, data: form});
+
+        // Obtenez le jeton d'authentification
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('No auth token found');
+          return;
+        }
+
+        await axios({
+          method,
+          url,
+          data: form,
+          headers: {
+            'Authorization': `Bearer ${token}`, // Ajoutez l'en-tête d'authentification
+            'Content-Type': 'application/json' // Assurez-vous que le type de contenu est bien spécifié
+          }
+        });
         router.push('/categories');
       } catch (error) {
         if (error.response && error.response.data.errors) {

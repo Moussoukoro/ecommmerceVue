@@ -56,13 +56,13 @@
               <router-link :to="`/orders/${order.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Voir commande">
                 Voir
               </router-link>
-              <a @click.prevent="validateOrder(order.id)" href="#" class="text-success font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
+              <a v-if="order.status ==='En cours de traitement'" @click.prevent="validateOrder(order.id)" href="#" class="text-success font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
                 Valider
               </a>
-              <a @click.prevent="cancelOrder(order.id)" href="#" class="text-danger font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
+              <a v-if="order.status ==='En cours de traitement' ||order.status ==='En attente'" @click.prevent="cancelOrder(order.id)" href="#" class="text-danger font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
                 Annuler
               </a>
-              <a @click.prevent="processOrder(order.id)" href="#" class="text-info font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
+              <a v-if="order.status ==='En attente'" @click.prevent="processOrder(order.id)" href="#" class="text-info font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
                 En cours
               </a>
 

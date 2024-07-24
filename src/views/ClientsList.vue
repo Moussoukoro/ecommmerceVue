@@ -48,12 +48,12 @@
                 <p class="text-xs text-secondary mb-0">{{ customer.sex }}</p>
               </td>
               <td class="align-middle">
-                <router-link :to="`/customers/edit/${customer.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                  Editer
-                </router-link>
-                <a href="javascript:;" @click="deleteCustomer(customer.id)" class="text-secondary font-weight-bold text-xs ms-3" data-toggle="tooltip" data-original-title="Delete user">
-                  Supprimer
-                </a>
+<!--                <router-link :to="`/customers/edit/${customer.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">-->
+<!--                  Editer-->
+<!--                </router-link>-->
+<!--                <a href="javascript:;" @click="deleteCustomer(customer.id)" class="text-secondary font-weight-bold text-xs ms-3" data-toggle="tooltip" data-original-title="Delete user">-->
+<!--                  Supprimer-->
+<!--                </a>-->
               </td>
             </tr>
             <tr v-if="customers.length === 0">

@@ -19,6 +19,7 @@ import UsersList from "@/views/UsersList.vue";
 import commandeList from "@/views/CommandeList.vue";
 import commandesForm from "@/views/CommandesForm.vue";
 import ShowCommande from "@/views/ShowCommande.vue";
+import Export from "@/views/Export.vue";
 
 
 const routes = [
@@ -31,6 +32,11 @@ const routes = [
     path: "/dashboard-default",
     name: "Dashboard",
     component: Dashboard,
+  },
+  {
+    path: "/export",
+    name: "export",
+    component: Export,
   },
   {
     path: "/tables",
