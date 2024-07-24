@@ -18,6 +18,7 @@ import UsersForm from "@/views/UsersForm.vue";
 import UsersList from "@/views/UsersList.vue";
 import commandeList from "@/views/CommandeList.vue";
 import commandesForm from "@/views/CommandesForm.vue";
+import ShowCommande from "@/views/ShowCommande.vue";
 
 
 const routes = [
@@ -118,6 +119,12 @@ const routes = [
     name: 'ordersEdit',
     component: commandesForm,
 
+  },
+  {
+    path:'/orders/:id',
+    name:'showOrder',
+    component: ShowCommande,
+    props: true
   },
   {
     path: '/users',
