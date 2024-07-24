@@ -56,13 +56,13 @@
               <router-link :to="`/orders/${order.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Voir commande">
                 Voir
               </router-link>
-              <a @click.prevent="validateOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
+              <a @click.prevent="validateOrder(order.id)" href="#" class="text-success font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
                 Valider
               </a>
-              <a @click.prevent="cancelOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
+              <a @click.prevent="cancelOrder(order.id)" href="#" class="text-danger font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
                 Annuler
               </a>
-              <a @click.prevent="processOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
+              <a @click.prevent="processOrder(order.id)" href="#" class="text-info font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
                 En cours
               </a>
 
@@ -216,3 +216,23 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-info {
+  color: #17a2b8 !important;
+}
+
+/* Optionnel : ajoutez un effet de survol */
+.text-success:hover, .text-danger:hover, .text-info:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+</style>

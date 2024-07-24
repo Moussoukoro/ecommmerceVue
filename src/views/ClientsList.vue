@@ -4,14 +4,14 @@
       <h6>Liste des clients</h6>
     </div>
 
-    <div class="mt-4 d-flex justify-content-between px-2">
+    <!-- <div class="mt-4 d-flex justify-content-between px-2">
     <router-link to="/customers/create" class="btn bg-gradient-primary">
       Ajouter un Client
     </router-link>
     <a href="#" class="btn bg-gradient-success">
       Exporter en PDF
-    </a>
-  </div>
+    </a> -->
+  <!-- </div> -->
 
     <div class="card-body px-0 pt-0 pb-2">
       <div class="table-responsive p-0">
