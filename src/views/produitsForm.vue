@@ -34,6 +34,7 @@
         <span v-if="formErrors.photo" class="text-red-500 mt-1 text-sm">{{ formErrors.photo }}</span>
       </div>
 
+
       <div class="flex justify-center">
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           {{ isEditing ? 'Modifier' : 'Ajouter' }}
