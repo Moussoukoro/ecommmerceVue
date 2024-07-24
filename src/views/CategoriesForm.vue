@@ -37,6 +37,8 @@
   </div>
 </template>
 
+
+
 <script>
 import { reactive, onMounted, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -51,7 +53,18 @@ export default {
     const form = reactive({name: ''});
     const errors = reactive({});
     const isEditing = computed(() => !!categoryId.value);
-    const apiBaseUrl = 'http://127.0.0.1:8000/api';
+
+    const getToken = () => {
+      return localStorage.getItem('token');
+    };
+
+    const api = axios.create({
+      baseURL: 'http://127.0.0.1:8000/api',
+      headers: {
+        'Authorization': `Bearer ${getToken()}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
     onMounted(async () => {
       if (isEditing.value) {
@@ -61,28 +74,30 @@ export default {
 
     const fetchCategory = async () => {
       try {
-        const response = await axios.get(`${apiBaseUrl}/categories/${categoryId.value}`);
+        const response = await api.get(`/categories/${categoryId.value}`);
         if (response.data && response.data.name) {
           form.name = response.data.name;
         }
       } catch (error) {
         console.error('Error fetching category:', error);
+        // Gérer l'erreur (par exemple, rediriger vers une page d'erreur ou afficher un message)
       }
     };
 
     const submitForm = async () => {
       try {
         const url = isEditing.value
-          ? `${apiBaseUrl}/categories/${categoryId.value}`
-          : `${apiBaseUrl}/store/categories`;
+          ? `/categories/${categoryId.value}`
+          : `/store/categories`;
         const method = isEditing.value ? 'put' : 'post';
-        await axios({method, url, data: form});
+        await api({method, url, data: form});
         router.push('/categories');
       } catch (error) {
         if (error.response && error.response.data.errors) {
           errors.name = error.response.data.errors.name;
         } else {
           console.error('Error submitting form:', error);
+          // Gérer l'erreur (par exemple, afficher un message d'erreur générique)
         }
       }
     };
@@ -96,7 +111,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Add any additional styles here if needed */
-</style>
