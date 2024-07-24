@@ -108,7 +108,6 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value,
     });
-
     // Affichage pour déboguer la réponse de l'API
     console.log('API Response:', response.data);
 
@@ -119,7 +118,7 @@ const handleSubmit = async () => {
     if (tokenData && user) {
       const { access_token, expires_at } = tokenData;
       localStorage.setItem('token', access_token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('tokenExpiration', new Date(expires_at).getTime());
       router.push('/categories');
     } else {
