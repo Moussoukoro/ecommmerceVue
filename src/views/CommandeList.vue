@@ -56,12 +56,16 @@
               <router-link :to="`/orders/${order.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Voir commande">
                 Voir
               </router-link>
-              <router-link :to="`/orders/${order.id}/edit`" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Modifier commande">
-                Modifier
-              </router-link>
-              <a @click.prevent="deleteOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Supprimer commande">
-                Supprimer
+              <a @click.prevent="validateOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
+                Valider
               </a>
+              <a @click.prevent="cancelOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
+                Annuler
+              </a>
+              <a @click.prevent="processOrder(order.id)" href="#" class="text-secondary font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
+                En cours
+              </a>
+
             </td>
           </tr>
           </tbody>
@@ -152,6 +156,49 @@ export default {
           return 'badge badge-sm bg-gradient-secondary';
       }
     };
+    const validateOrder = async (orderId) => {
+      if (confirm('Êtes-vous sûr de vouloir valider cette commande?')) {
+        try {
+          await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/validate`, {},
+              { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+          );
+          fetchOrders(); // Rafraîchir la liste après validation
+        } catch (error) {
+          console.error('Error validating order:', error);
+        }
+      }
+    };
+    const cancelOrder = async (orderId) => {
+      if (confirm('Êtes-vous sûr de vouloir annuler cette commande?')) {
+        try {
+          await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/cancel`, {},
+              { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+          );
+          fetchOrders(); // Rafraîchir la liste après annulation
+        } catch (error) {
+          console.error('Error canceling order:', error);
+        }
+      }
+    };
+
+    const processOrder = async (orderId) => {
+      if (confirm('Êtes-vous sûr de vouloir mettre cette commande en cours de traitement?')) {
+        try {
+          await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/process`, {},
+              { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+          );
+          fetchOrders(); // Rafraîchir la liste après mise en traitement
+        } catch (error) {
+          console.error('Error processing order:', error);
+        }
+      }
+    };
+
+
+
+
+
+
 
     onMounted(fetchOrders);
 
@@ -162,6 +209,9 @@ export default {
       deleteOrder,
       formatDate,
       getStatusBadgeClass,
+      validateOrder,
+      cancelOrder,
+      processOrder
     };
   },
 };
