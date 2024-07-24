@@ -1,29 +1,39 @@
 <template>
-  <div>
-    <div class="flex justify-between mb-8">
-      <router-link to="/categories" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-        Retour
-      </router-link>
+  <div class="card">
+    <div class="card-header pb-0">
+      <div class="d-flex justify-content-between">
+        <h6>{{ isEditing ? 'Modifier la catégorie' : 'Créer une nouvelle catégorie' }}</h6>
+        <router-link to="/categories" class="btn btn-outline-secondary btn-sm mb-0">
+          Retour
+        </router-link>
+      </div>
     </div>
-
-    <form @submit.prevent="submitForm" class="space-y-6">
-      <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-        <label for="name" class="block text-sm font-medium text-gray-700">Nom de la catégorie</label>
-        <input
-            type="text"
-            id="name"
-            v-model="form.name"
-            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-        />
-        <p v-if="errors.name" class="mt-2 text-sm text-red-600">{{ errors.name }}</p>
-      </div>
-
-      <div>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          {{ isEditing ? 'Modifier' : 'Créer' }}
-        </button>
-      </div>
-    </form>
+    <div class="card-body">
+      <form @submit.prevent="submitForm">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="name" class="form-control-label">Nom de la catégorie</label>
+              <input
+                type="text"
+                id="name"
+                v-model="form.name"
+                class="form-control"
+                :class="{ 'is-invalid': errors.name }"
+              />
+              <div v-if="errors.name" class="invalid-feedback">{{ errors.name }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-12">
+            <button type="submit" class="btn bg-gradient-primary">
+              {{ isEditing ? 'Modifier' : 'Créer' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -41,7 +51,6 @@ export default {
     const form = reactive({name: ''});
     const errors = reactive({});
     const isEditing = computed(() => !!categoryId.value);
-
     const apiBaseUrl = 'http://127.0.0.1:8000/api';
 
     onMounted(async () => {
@@ -52,7 +61,7 @@ export default {
 
     const fetchCategory = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/categories/${categoryId.value}`);
+        const response = await axios.get(`${apiBaseUrl}/categories/${categoryId.value}`);
         if (response.data && response.data.name) {
           form.name = response.data.name;
         }
@@ -64,10 +73,9 @@ export default {
     const submitForm = async () => {
       try {
         const url = isEditing.value
-            ? `${apiBaseUrl}/categories/${categoryId.value}`
-            : `${apiBaseUrl}/store/categories`;
+          ? `${apiBaseUrl}/categories/${categoryId.value}`
+          : `${apiBaseUrl}/store/categories`;
         const method = isEditing.value ? 'put' : 'post';
-
         await axios({method, url, data: form});
         router.push('/categories');
       } catch (error) {
@@ -88,3 +96,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Add any additional styles here if needed */
+</style>

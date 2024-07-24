@@ -1,31 +1,71 @@
 <template>
-  <div>
-    <!-- Add category button -->
-    <div class="flex justify-between items-center mb-4">
-      <router-link to="categories/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ajouter une catégorie</router-link>
+  <div class="card my-5">
+    <div class="card-header pb-0 d-flex justify-content-between">
+      <h6>Liste des catégories</h6>
+      <div class="mt-4">
+        <router-link 
+          to="categories/create" 
+          class="btn bg-gradient-primary"
+        >
+          Ajouter une catégorie
+        </router-link>
+      </div>
     </div>
 
-    <!-- Categories table -->
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-      <tr>
-        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nom</th>
-        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
-      </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-      <tr v-for="category in categories" :key="category.id">
-        <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
-        <td class="px-6 py-4 whitespace-nowrap">
-          <div class="flex items-center space-x-2">
-            <router-link :to="`categories/edit/${category.id}`" class="text-indigo-600 hover:text-indigo-900">Editer</router-link>
-            <button @click="deleteCategory(category.id)" class="text-red-600 hover:text-red-900 ml-4">Supprimer</button>
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+     <!-- Add category button -->
+
+
+    <div class="card-body px-0 pt-0 pb-2">
+      <div class="table-responsive p-0">
+        <table class="table align-items-center mb-0">
+          <thead>
+            <tr>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                Nom
+              </th>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="category in categories" :key="category.id">
+              <td>
+                <div class="d-flex px-2 py-1">
+                  <div class="d-flex flex-column justify-content-center">
+                    <h6 class="mb-0 text-sm">{{ category.name }}</h6>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex">
+                  <router-link 
+                    :to="`categories/edit/${category.id}`" 
+                    class="text-secondary font-weight-bold text-xs me-3"
+                    data-toggle="tooltip"
+                    data-original-title="Edit category"
+                  >
+                    Editer
+                  </router-link>
+                  <a
+                    href="javascript:;"
+                    class="text-secondary font-weight-bold text-xs"
+                    data-toggle="tooltip"
+                    data-original-title="Delete category"
+                    @click="deleteCategory(category.id)"
+                  >
+                    Supprimer
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
+  
+ 
 </template>
 
 <script>

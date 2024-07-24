@@ -46,6 +46,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import router from "@/router";
 
 export default {
   name: 'ProductForm',
@@ -85,6 +86,10 @@ export default {
         });
         console.log('Produit créé:', response.data);
         // Réinitialiser le formulaire ou rediriger l'utilisateur
+
+
+        // Redirection vers la page de liste des produits
+        router.push('/products');
       } catch (error) {
         handleError(error);
       }

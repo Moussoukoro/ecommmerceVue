@@ -1,52 +1,73 @@
 <template>
-  <div>
-    <div class="flex justify-between items-center mb-8">
-      <router-link to="/customers/create" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Ajouter un Client
-      </router-link>
-      <a href="{{ route('customers.exportPDF') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-        Exporter en PDF
-      </a>
+  <div class="card">
+    <div class="card-header pb-0">
+      <h6>Liste des clients</h6>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded shadow">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-2xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-          <th class="px-6 py-3 text-left text-2xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
-          <th class="px-6 py-3 text-left text-2xs font-medium text-gray-500 uppercase tracking-wider">Adresse</th>
-          <th class="px-6 py-3 text-left text-2xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
-          <th class="px-6 py-3 text-left text-2xs font-medium text-gray-500 uppercase tracking-wider">Sexe</th>
-          <th class="px-6 py-3 text-left text-2xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-        </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="customer in customers" :key="customer.id">
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.lastname }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.firstname }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.address }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.phone }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.sex }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <router-link :to="`/customers/edit/${customer.id}`" class="text-indigo-600 hover:text-indigo-900">Editer</router-link>
-            <button @click="deleteCustomer(customer.id)" class="text-red-600 hover:text-red-900 ml-4">Supprimer</button>
-<!--            <router-link :to="{ name: 'admin.customers.show', params: { id: customer.id }}" class="text-indigo-600 hover:text-indigo-900 ml-4">-->
-<!--              Historique-->
-<!--            </router-link>-->
-          </td>
-        </tr>
-        <tr v-if="customers.length === 0">
-          <td class="px-6 py-4 text-center" colspan="6">Aucun client trouvé</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="mt-4 d-flex justify-content-between px-2">
+    <router-link to="/customers/create" class="btn bg-gradient-primary">
+      Ajouter un Client
+    </router-link>
+    <a href="#" class="btn bg-gradient-success">
+      Exporter en PDF
+    </a>
+  </div>
 
-    <div class="mt-6">
-      <pagination :data="customers" @pagination-change-page="fetchCustomers" :hide-if-empty="true" />
+    <div class="card-body px-0 pt-0 pb-2">
+      <div class="table-responsive p-0">
+        <table class="table align-items-center mb-0">
+          <thead>
+            <tr>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom</th>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prénom</th>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Adresse</th>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Téléphone</th>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Sexe</th>
+              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="customer in customers" :key="customer.id">
+              <td>
+                <div class="d-flex px-2 py-1">
+                  <div class="d-flex flex-column justify-content-center">
+                    <h6 class="mb-0 text-sm">{{ customer.lastname }}</h6>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <h6 class="mb-0 text-sm">{{ customer.firstname }}</h6>
+              </td>
+              <td>
+                <p class="text-xs text-secondary mb-0">{{ customer.address }}</p>
+              </td>
+              <td>
+                <p class="text-xs text-secondary mb-0">{{ customer.phone }}</p>
+              </td>
+              <td>
+                <p class="text-xs text-secondary mb-0">{{ customer.sex }}</p>
+              </td>
+              <td class="align-middle">
+                <router-link :to="`/customers/edit/${customer.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                  Editer
+                </router-link>
+                <a href="javascript:;" @click="deleteCustomer(customer.id)" class="text-secondary font-weight-bold text-xs ms-3" data-toggle="tooltip" data-original-title="Delete user">
+                  Supprimer
+                </a>
+              </td>
+            </tr>
+            <tr v-if="customers.length === 0">
+              <td colspan="6" class="text-center py-4">Aucun client trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
+  
+
+ 
 </template>
 
 <script>

@@ -1,15 +1,4 @@
 <template>
-  <div class="container top-0 position-sticky z-index-sticky">
-    <div class="row">
-      <div class="col-12">
-        <Navbar
-            isBlur="blur border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow"
-            :darkMode="true"
-            isBtn="bg-gradient-success"
-        />
-      </div>
-    </div>
-  </div>
   <main class="mt-0 main-content">
     <section>
       <div class="page-header min-vh-100">
@@ -59,12 +48,12 @@
                     </div>
                   </form>
                 </div>
-                <div class="px-1 pt-0 text-center card-footer px-lg-2">
-                  <p class="mx-auto mb-4 text-sm">
-                    Don't have an account?
-                    <a href="javascript:;" class="text-success text-gradient font-weight-bold">Sign up</a>
-                  </p>
-                </div>
+<!--                <div class="px-1 pt-0 text-center card-footer px-lg-2">-->
+<!--                  <p class="mx-auto mb-4 text-sm">-->
+<!--                    Don't have an account?-->
+<!--                    <a href="javascript:;" class="text-success text-gradient font-weight-bold">Sign up</a>-->
+<!--                  </p>-->
+<!--                </div>-->
               </div>
             </div>
             <div class="top-0 my-auto text-center col-6 d-lg-flex d-none h-100 pe-0 position-absolute end-0 justify-content-center flex-column">
@@ -89,7 +78,7 @@ import {ref, onBeforeMount, onBeforeUnmount} from 'vue';
 import axios from 'axios';
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
-import Navbar from '@/examples/PageLayout/Navbar.vue';
+// import Navbar from '@/examples/PageLayout/Navbar.vue';
 import ArgonInput from '@/components/ArgonInput.vue';
 import ArgonSwitch from '@/components/ArgonSwitch.vue';
 import ArgonButton from '@/components/ArgonButton.vue';
@@ -108,6 +97,7 @@ const handleSubmit = async () => {
       email: email.value,
       password: password.value,
     });
+
     // Affichage pour déboguer la réponse de l'API
     console.log('API Response:', response.data);
 
@@ -118,7 +108,7 @@ const handleSubmit = async () => {
     if (tokenData && user) {
       const { access_token, expires_at } = tokenData;
       localStorage.setItem('token', access_token);
-      // localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('tokenExpiration', new Date(expires_at).getTime());
       router.push('/categories');
     } else {
@@ -129,12 +119,6 @@ const handleSubmit = async () => {
     errorMessage.value = 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
   }
 };
-
-
-
-
-
-
 
 
 
