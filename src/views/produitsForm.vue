@@ -69,6 +69,7 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import router from "@/router";
+import Swal from "sweetalert2";
 
 export default {
   name: 'ProductForm',
@@ -109,6 +110,12 @@ export default {
         console.log('Produit créé:', response.data);
         // Réinitialiser le formulaire ou rediriger l'utilisateur
 
+        Swal.fire({
+          title: 'Produit ajouté',
+          text: 'Le produit a été ajouté avec succès',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
 
         // Redirection vers la page de liste des produits
         router.push('/products');
@@ -154,6 +161,16 @@ export default {
         // - Mettre à jour l'état local
         // - Afficher un message de succès
         // - Rediriger l'utilisateur
+
+        Swal.fire({
+          title: 'Produit mis à jour',
+          text: 'Le produit a été mis à jour avec succès',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+
+        // Redirection vers la page de liste des produits
+        router.push('/products');
 
       } catch (error) {
         if (error.response) {
