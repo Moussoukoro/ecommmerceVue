@@ -43,6 +43,7 @@
 import { reactive, onMounted, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import Swal from "sweetalert2";
 
 export default {
   name: 'CategoryForm',
@@ -91,7 +92,15 @@ export default {
           : `/store/categories`;
         const method = isEditing.value ? 'put' : 'post';
         await api({method, url, data: form});
+
+        Swal.fire({
+        title: "Fait !",
+        text: "La catégorie a été enregistrée avec succès",
+        icon: "success"
+      });
+
         router.push('/categories');
+        
       } catch (error) {
         if (error.response && error.response.data.errors) {
           errors.name = error.response.data.errors.name;

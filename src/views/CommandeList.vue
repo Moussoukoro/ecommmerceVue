@@ -56,13 +56,13 @@
               <router-link :to="`/orders/${order.id}`" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Voir commande">
                 Voir
               </router-link>
-              <a @click.prevent="validateOrder(order.id)" href="#" class="text-success font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
+              <a v-if="order.status === 'En cours de traitement'" @click.prevent="validateOrder(order.id)" href="#" class="text-success font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Valider commande">
                 Valider
               </a>
-              <a @click.prevent="cancelOrder(order.id)" href="#" class="text-danger font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
+              <a v-if="order.status === 'En cours de traitement' || order.status === 'En attente'" @click.prevent="cancelOrder(order.id)" href="#" class="text-danger font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="Annuler commande">
                 Annuler
               </a>
-              <a @click.prevent="processOrder(order.id)" href="#" class="text-info font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
+              <a v-if="order.status === 'En attente'" @click.prevent="processOrder(order.id)" href="#" class="text-info font-weight-bold text-xs ms-2" data-toggle="tooltip" data-original-title="En cours de traitement">
                 En cours
               </a>
 
@@ -85,6 +85,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import Swal from "sweetalert2";
 
 export default {
   name: 'CommandeList',
@@ -157,7 +158,15 @@ export default {
       }
     };
     const validateOrder = async (orderId) => {
-      if (confirm('Êtes-vous sûr de vouloir valider cette commande?')) {
+      const result = await Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: 'Vous ne pourrez pas revenir en arrière !',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, valider',
+        cancelButtonText: 'Annuler'
+      });
+      if (result.isConfirmed) {
         try {
           await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/validate`, {},
               { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
@@ -169,7 +178,15 @@ export default {
       }
     };
     const cancelOrder = async (orderId) => {
-      if (confirm('Êtes-vous sûr de vouloir annuler cette commande?')) {
+      const result = await Swal.fire({
+        title: 'Êtes-vous sûr de vouloir annuler ?',
+        text: 'Vous ne pourrez pas revenir en arrière !',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, annuler',
+        cancelButtonText: 'Annuler'
+      });
+      if (result.isConfirmed) {
         try {
           await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/cancel`, {},
               { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
@@ -182,7 +199,15 @@ export default {
     };
 
     const processOrder = async (orderId) => {
-      if (confirm('Êtes-vous sûr de vouloir mettre cette commande en cours de traitement?')) {
+      const result = await Swal.fire({
+        title: 'Êtes-vous sûr de vouloir mettre cette commande en cours de traitement ?',
+        text: 'Vous ne pourrez pas revenir en arrière !',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, traiter',
+        cancelButtonText: 'Annuler'
+      });
+      if (result.isConfirmed) {
         try {
           await axios.put(`http://127.0.0.1:8000/api/orders/${orderId}/process`, {},
               { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }

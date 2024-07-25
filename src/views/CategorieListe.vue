@@ -70,6 +70,7 @@
 
 <script>
 import axios from 'axios';
+import Swal from "sweetalert2";
 
 
 export default {
@@ -99,6 +100,19 @@ export default {
 
     async deleteCategory(categoryId) {
       try {
+        // Demander une confirmation avant de supprimer avec SweetAlert
+        const result = await Swal.fire({
+          title: 'Êtes-vous sûr ?',
+          text: 'Vous ne pourrez pas revenir en arrière !',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Oui, supprimer',
+          cancelButtonText: 'Annuler'
+        });
+        
+        if (!result.isConfirmed) {
+          return;
+        }
         await this.checkToken(); // Vérifiez le jeton avant de faire la requête
         await axios.delete(`http://127.0.0.1:8000/api/categories/${categoryId}`, {
           headers: {
